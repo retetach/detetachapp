@@ -3,57 +3,430 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dumpling Coin Hunt 🥟</title>
+  <title>HomeServe — Book Local Home Services</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="game-wrapper">
-    <header>
-      <h1>🥟 Dumpling Coin Hunt</h1>
-      <p class="subtitle">A coin is hiding inside one of the dumplings. Can you find it?</p>
-    </header>
 
-    <div class="stats-bar">
-      <div class="stat">
-        <span class="stat-label">Score</span>
-        <span class="stat-value" id="score">0</span>
-      </div>
-      <div class="stat">
-        <span class="stat-label">Round</span>
-        <span class="stat-value" id="round">1</span>
-      </div>
-      <div class="stat">
-        <span class="stat-label">Best</span>
-        <span class="stat-value" id="best">0</span>
-      </div>
-      <div class="stat">
-        <span class="stat-label">Tries Left</span>
-        <span class="stat-value" id="tries">3</span>
+  <!-- NAV -->
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a class="logo" href="#" onclick="showPage('home'); return false;">
+        <svg width="26" height="26" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <path d="M14 3L2 13h3v12h7v-7h4v7h7V13h3L14 3z" fill="#2563eb"/>
+        </svg>
+        HomeServe
+      </a>
+      <div class="nav-links">
+        <a href="#" onclick="showPage('home'); return false;">Find Services</a>
+        <a href="#" onclick="showPage('my-bookings'); return false;">My Bookings</a>
       </div>
     </div>
+  </nav>
 
-    <div class="bowl-container" id="bowl-container" aria-label="Bowl of dumplings"></div>
+  <!-- ═══════════════════════════════════
+       PAGE: HOME
+  ════════════════════════════════════ -->
+  <div id="page-home" class="page active">
 
-    <div class="message-box" id="message-box">
-      <span id="message-text">Pick a dumpling to find the coin!</span>
-    </div>
+    <section class="hero">
+      <div class="hero-content">
+        <h1>Book trusted home services,<br>in your neighbourhood</h1>
+        <p class="hero-sub">Cleaning, plumbing, electrical, gardening &amp; more —<br>vetted pros, upfront prices, instant confirmation.</p>
+        <div class="search-box">
+          <div class="search-field">
+            <label for="search-zip">Your postcode / zip</label>
+            <input id="search-zip" type="text" placeholder="e.g. 10001 or SW1A" autocomplete="postal-code" />
+          </div>
+          <div class="search-field">
+            <label for="search-category">Service type</label>
+            <select id="search-category">
+              <option value="">All services</option>
+              <option value="cleaning">Cleaning</option>
+              <option value="plumbing">Plumbing</option>
+              <option value="electrical">Electrical</option>
+              <option value="gardening">Gardening</option>
+              <option value="painting">Painting &amp; Decorating</option>
+              <option value="hvac">Heating &amp; HVAC</option>
+              <option value="handyman">Handyman</option>
+              <option value="pest">Pest Control</option>
+            </select>
+          </div>
+          <button class="btn-primary search-btn" onclick="doSearch()">Search</button>
+        </div>
+      </div>
+    </section>
 
-    <div class="controls">
-      <button class="btn btn-primary" id="new-game-btn">New Game</button>
-    </div>
+    <section class="categories-section">
+      <div class="container">
+        <h2>Browse by category</h2>
+        <div class="categories-grid">
+          <button class="category-card" onclick="quickSearch('cleaning')">
+            <span class="cat-icon" aria-hidden="true">🧹</span>
+            <span>Cleaning</span>
+          </button>
+          <button class="category-card" onclick="quickSearch('plumbing')">
+            <span class="cat-icon" aria-hidden="true">🔧</span>
+            <span>Plumbing</span>
+          </button>
+          <button class="category-card" onclick="quickSearch('electrical')">
+            <span class="cat-icon" aria-hidden="true">⚡</span>
+            <span>Electrical</span>
+          </button>
+          <button class="category-card" onclick="quickSearch('gardening')">
+            <span class="cat-icon" aria-hidden="true">🌿</span>
+            <span>Gardening</span>
+          </button>
+          <button class="category-card" onclick="quickSearch('painting')">
+            <span class="cat-icon" aria-hidden="true">🎨</span>
+            <span>Painting</span>
+          </button>
+          <button class="category-card" onclick="quickSearch('hvac')">
+            <span class="cat-icon" aria-hidden="true">❄️</span>
+            <span>HVAC</span>
+          </button>
+          <button class="category-card" onclick="quickSearch('handyman')">
+            <span class="cat-icon" aria-hidden="true">🔨</span>
+            <span>Handyman</span>
+          </button>
+          <button class="category-card" onclick="quickSearch('pest')">
+            <span class="cat-icon" aria-hidden="true">🪲</span>
+            <span>Pest Control</span>
+          </button>
+        </div>
+      </div>
+    </section>
 
-    <div class="hint-bar" id="hint-bar"></div>
+    <section class="how-it-works">
+      <div class="container">
+        <h2>How it works</h2>
+        <div class="steps-grid">
+          <div class="step">
+            <div class="step-num">1</div>
+            <h3>Search your area</h3>
+            <p>Enter your postcode and choose the service you need.</p>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <h3>Pick a pro</h3>
+            <p>Compare ratings, reviews and pricing from real customers.</p>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <h3>Book &amp; pay online</h3>
+            <p>Choose your slot and pay securely. Instant confirmation.</p>
+          </div>
+          <div class="step">
+            <div class="step-num">4</div>
+            <h3>Get it done</h3>
+            <p>Your pro arrives on time. Rate them after the job.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="trust-section">
+      <div class="container">
+        <div class="trust-grid">
+          <div class="trust-item">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <strong>Vetted &amp; insured</strong>
+            <p>All pros pass background checks</p>
+          </div>
+          <div class="trust-item">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <strong>Secure payments</strong>
+            <p>256-bit SSL encrypted checkout</p>
+          </div>
+          <div class="trust-item">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <strong>Satisfaction guarantee</strong>
+            <p>Not happy? We'll make it right</p>
+          </div>
+          <div class="trust-item">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <strong>On-time promise</strong>
+            <p>Pros respect your schedule</p>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 
-  <div class="overlay hidden" id="overlay">
-    <div class="overlay-card">
-      <div class="overlay-icon" id="overlay-icon"></div>
-      <h2 id="overlay-title"></h2>
-      <p id="overlay-msg"></p>
-      <button class="btn btn-primary" id="overlay-btn">Play Again</button>
+  <!-- ═══════════════════════════════════
+       PAGE: LISTINGS
+  ════════════════════════════════════ -->
+  <div id="page-listings" class="page">
+    <div class="container listings-container">
+      <div class="listings-header">
+        <div>
+          <h2 id="listings-title">Results</h2>
+          <p id="listings-subtitle" class="text-muted"></p>
+        </div>
+        <div class="listings-controls">
+          <label for="sort-select">Sort by</label>
+          <select id="sort-select" onchange="applySort()">
+            <option value="rating">Highest rated</option>
+            <option value="price-asc">Price: low to high</option>
+            <option value="price-desc">Price: high to low</option>
+            <option value="reviews">Most reviews</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="listings-layout">
+        <aside class="filters-panel">
+          <h3>Filters</h3>
+          <div class="filter-group">
+            <label class="filter-label">Max hourly rate (£)</label>
+            <input type="range" id="price-filter" min="10" max="200" value="200" step="5"
+                   oninput="updatePriceLabel(this.value); applyFilters()" />
+            <span id="price-label" class="filter-value">Up to £200/hr</span>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label" for="rating-filter">Min rating</label>
+            <select id="rating-filter" onchange="applyFilters()">
+              <option value="0">Any rating</option>
+              <option value="4">4+ stars</option>
+              <option value="4.5">4.5+ stars</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <p class="filter-label">Availability</p>
+            <label class="checkbox-label">
+              <input type="checkbox" id="avail-weekend" onchange="applyFilters()"> Weekends
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="avail-evening" onchange="applyFilters()"> Evenings
+            </label>
+          </div>
+          <button class="btn-ghost" onclick="resetFilters()">Reset filters</button>
+        </aside>
+
+        <div id="listings-grid" class="listings-grid"></div>
+      </div>
     </div>
   </div>
 
-  <script src="game.js"></script>
+  <!-- ═══════════════════════════════════
+       PAGE: PROVIDER DETAIL
+  ════════════════════════════════════ -->
+  <div id="page-provider" class="page">
+    <div class="container provider-container">
+      <button class="btn-ghost back-btn" onclick="goBackToListings()">&#8592; Back to results</button>
+      <div id="provider-detail"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       PAGE: BOOKING
+  ════════════════════════════════════ -->
+  <div id="page-booking" class="page">
+    <div class="container booking-container">
+      <button class="btn-ghost back-btn" onclick="goBackToProvider()">&#8592; Back</button>
+      <div class="booking-layout">
+        <div class="booking-form-wrap">
+          <h2>Book your appointment</h2>
+          <div id="booking-provider-summary" class="provider-summary-card"></div>
+
+          <form id="booking-form" onsubmit="proceedToPayment(event)">
+            <fieldset>
+              <legend>Your details</legend>
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="b-first">First name</label>
+                  <input type="text" id="b-first" required placeholder="Jane" />
+                </div>
+                <div class="form-field">
+                  <label for="b-last">Last name</label>
+                  <input type="text" id="b-last" required placeholder="Smith" />
+                </div>
+              </div>
+              <div class="form-field">
+                <label for="b-email">Email</label>
+                <input type="email" id="b-email" required placeholder="jane@example.com" />
+              </div>
+              <div class="form-field">
+                <label for="b-phone">Phone</label>
+                <input type="tel" id="b-phone" required placeholder="+1 555 000 0000" />
+              </div>
+              <div class="form-field">
+                <label for="b-address">Service address</label>
+                <input type="text" id="b-address" required placeholder="123 Main St, Your City" />
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Appointment</legend>
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="b-date">Date</label>
+                  <input type="date" id="b-date" required />
+                </div>
+                <div class="form-field">
+                  <label for="b-time">Time slot</label>
+                  <select id="b-time" required>
+                    <option value="">Select time</option>
+                    <option value="08:00">8:00 AM</option>
+                    <option value="09:00">9:00 AM</option>
+                    <option value="10:00">10:00 AM</option>
+                    <option value="11:00">11:00 AM</option>
+                    <option value="13:00">1:00 PM</option>
+                    <option value="14:00">2:00 PM</option>
+                    <option value="15:00">3:00 PM</option>
+                    <option value="16:00">4:00 PM</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-field">
+                <label for="b-duration">Duration</label>
+                <select id="b-duration" required onchange="updateBookingTotal()">
+                  <option value="1">1 hour</option>
+                  <option value="2">2 hours</option>
+                  <option value="3">3 hours</option>
+                  <option value="4">4 hours</option>
+                  <option value="6">6 hours (full day)</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="b-notes">Notes for the pro (optional)</label>
+                <textarea id="b-notes" rows="3" placeholder="Any specific requirements or access details…"></textarea>
+              </div>
+            </fieldset>
+
+            <div class="booking-total-card">
+              <div class="total-row">
+                <span id="total-label">Total (1 hr)</span>
+                <span id="total-amount" class="total-price">£0</span>
+              </div>
+              <p class="text-muted small">Payment taken on the next step.</p>
+            </div>
+
+            <button type="submit" class="btn-primary full-width">Continue to Payment</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       PAGE: PAYMENT
+  ════════════════════════════════════ -->
+  <div id="page-payment" class="page">
+    <div class="container payment-container">
+      <button class="btn-ghost back-btn" onclick="showPage('booking')">&#8592; Back to booking</button>
+      <div class="payment-layout">
+        <div class="payment-form-wrap">
+          <h2>Secure payment</h2>
+          <div class="secure-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            256-bit SSL encrypted
+          </div>
+
+          <div id="payment-order-summary" class="order-summary"></div>
+
+          <form id="payment-form" onsubmit="processPayment(event)">
+            <fieldset>
+              <legend>Card details</legend>
+              <div class="form-field">
+                <label for="p-name">Name on card</label>
+                <input type="text" id="p-name" required placeholder="Jane Smith" autocomplete="cc-name" />
+              </div>
+              <div class="form-field card-number-wrap">
+                <label for="p-card">Card number</label>
+                <input type="text" id="p-card" required placeholder="1234 5678 9012 3456"
+                       maxlength="19" oninput="formatCard(this)" autocomplete="cc-number" />
+                <div class="card-icons" aria-hidden="true">
+                  <span class="card-badge">VISA</span>
+                  <span class="card-badge">MC</span>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="p-expiry">Expiry</label>
+                  <input type="text" id="p-expiry" required placeholder="MM/YY"
+                         maxlength="5" oninput="formatExpiry(this)" autocomplete="cc-exp" />
+                </div>
+                <div class="form-field">
+                  <label for="p-cvv">CVV</label>
+                  <input type="text" id="p-cvv" required placeholder="123"
+                         maxlength="4" pattern="\d{3,4}" autocomplete="cc-csc" />
+                </div>
+              </div>
+            </fieldset>
+
+            <div class="form-field">
+              <label class="checkbox-label">
+                <input type="checkbox" id="billing-same" checked onchange="toggleBilling()">
+                Billing address same as service address
+              </label>
+            </div>
+            <div id="billing-address-fields" class="hidden">
+              <div class="form-field">
+                <label for="p-billing">Billing address</label>
+                <input type="text" id="p-billing" placeholder="Billing address" />
+              </div>
+            </div>
+
+            <div class="booking-total-card">
+              <div class="total-row">
+                <span>Amount due today</span>
+                <span id="payment-total-amount" class="total-price">£0</span>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-primary full-width pay-btn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              Pay now
+            </button>
+            <p class="text-muted small center-text">No charge until you click Pay now</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       PAGE: CONFIRMATION
+  ════════════════════════════════════ -->
+  <div id="page-confirmation" class="page">
+    <div class="container confirmation-container">
+      <div class="confirmation-card">
+        <div class="confirmation-icon" aria-hidden="true">
+          <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+            <circle cx="28" cy="28" r="28" fill="#dcfce7"/>
+            <path d="M16 28l8 8 16-16" stroke="#16a34a" stroke-width="3.5"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h1>Booking confirmed!</h1>
+        <p class="confirmation-sub">Your booking is all set. A confirmation email has been sent.</p>
+        <div id="confirmation-details" class="confirmation-details"></div>
+        <div class="confirmation-actions">
+          <button class="btn-primary" onclick="showPage('my-bookings')">View my bookings</button>
+          <button class="btn-ghost" onclick="showPage('home')">Book another service</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       PAGE: MY BOOKINGS
+  ════════════════════════════════════ -->
+  <div id="page-my-bookings" class="page">
+    <div class="container">
+      <h2>My Bookings</h2>
+      <div id="my-bookings-list" class="my-bookings-list"></div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
 </body>
 </html>
