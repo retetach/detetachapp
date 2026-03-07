@@ -868,8 +868,343 @@ input[type="range"] {
 
 .toast.show { transform: translateX(-50%) translateY(0); }
 
+/* ─── Singapore logo badge ────────────────────────── */
+.logo-sg {
+  font-size: .72rem;
+  font-weight: 900;
+  background: var(--blue);
+  color: #fff;
+  padding: .1rem .4rem;
+  border-radius: 4px;
+  margin-left: .15rem;
+  letter-spacing: .05em;
+  vertical-align: middle;
+}
+
+/* ─── Hero flag pill ─────────────────────────────── */
+.hero-flag {
+  display: inline-block;
+  background: rgba(255,255,255,.2);
+  color: #fff;
+  font-size: .82rem;
+  font-weight: 600;
+  padding: .3rem .9rem;
+  border-radius: 20px;
+  margin-bottom: .85rem;
+  border: 1px solid rgba(255,255,255,.35);
+}
+
+/* ─── Map section ────────────────────────────────── */
+.map-section { padding: 2.5rem 0 1.5rem; background: var(--white); border-bottom: 1px solid var(--border); }
+
+.map-section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: .75rem;
+}
+
+.map-section-header h2 { margin-bottom: .1rem; }
+
+/* ─── Map category pills ─────────────────────────── */
+.map-category-pills {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+  margin-bottom: .85rem;
+}
+
+.map-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  padding: .35rem .85rem;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--text-mid);
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+
+.map-pill:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+.map-pill.active { border-color: var(--blue); color: #fff; background: var(--blue); }
+
+/* ─── Leaflet map container ──────────────────────── */
+#services-map {
+  height: 460px;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--border);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  z-index: 0;
+}
+
+.map-hint {
+  font-size: .78rem;
+  color: var(--text-muted);
+  margin-top: .55rem;
+  text-align: center;
+}
+
+/* ─── Custom map marker ──────────────────────────── */
+.hs-marker {
+  background: transparent !important;
+  border: none !important;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hs-marker-pin {
+  width: 44px;
+  height: 44px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,.3);
+  border: 2.5px solid rgba(255,255,255,.95);
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+}
+
+.hs-marker:hover .hs-marker-pin {
+  transform: rotate(-45deg) scale(1.15);
+  box-shadow: 0 6px 18px rgba(0,0,0,.4);
+}
+
+.hs-marker-emoji {
+  transform: rotate(45deg);
+  font-size: 1.15rem;
+  display: block;
+  line-height: 1;
+}
+
+.hs-marker-label {
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: .68rem;
+  font-weight: 800;
+  padding: .1rem .45rem;
+  margin-top: 2px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.12);
+  color: #111827;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ─── Map popup ──────────────────────────────────── */
+.hs-popup .leaflet-popup-content-wrapper {
+  padding: 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 8px 28px rgba(0,0,0,.18);
+  border: none;
+}
+
+.hs-popup .leaflet-popup-content {
+  margin: 0;
+  line-height: inherit;
+  width: 220px !important;
+}
+
+.hs-popup .leaflet-popup-tip { background: var(--white); }
+
+.hs-popup .leaflet-popup-close-button {
+  color: rgba(255,255,255,.85) !important;
+  font-size: 20px !important;
+  top: 5px !important;
+  right: 8px !important;
+  z-index: 1;
+}
+
+.map-popup { font-family: 'Segoe UI', system-ui, sans-serif; }
+
+.map-popup-head {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .65rem .85rem;
+  color: #fff;
+}
+
+.map-popup-ico { font-size: 1.4rem; line-height: 1; }
+
+.map-popup-catbadge {
+  font-size: .72rem;
+  font-weight: 700;
+  background: rgba(255,255,255,.25);
+  padding: .15rem .55rem;
+  border-radius: 20px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.map-popup-body { padding: .7rem .85rem .85rem; }
+
+.map-popup-name {
+  font-weight: 800;
+  font-size: .92rem;
+  color: #111827;
+  margin-bottom: .35rem;
+}
+
+.map-popup-meta {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .8rem;
+  margin-bottom: .3rem;
+}
+
+.map-popup-stars { color: #f59e0b; font-weight: 700; }
+.map-popup-rc    { color: #6b7280; }
+.map-popup-price { font-weight: 800; color: var(--blue); margin-left: auto; }
+
+.map-popup-loc {
+  font-size: .78rem;
+  color: #6b7280;
+  margin-bottom: .2rem;
+}
+
+.map-popup-lic {
+  font-size: .72rem;
+  font-weight: 600;
+  color: #16a34a;
+  background: #dcfce7;
+  display: inline-block;
+  padding: .1rem .45rem;
+  border-radius: 10px;
+  margin-bottom: .65rem;
+}
+
+.map-popup-btn {
+  display: block;
+  width: 100%;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: .5rem .75rem;
+  font-size: .82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .15s;
+  font-family: inherit;
+}
+
+.map-popup-btn:hover { background: var(--blue-dark); }
+
+/* ─── GST note ───────────────────────────────────── */
+.gst-note {
+  font-size: .72rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-left: .3rem;
+}
+
+/* ─── Payment method tabs ────────────────────────── */
+.pm-tabs {
+  display: flex;
+  gap: .5rem;
+  margin-bottom: 1.25rem;
+}
+
+.pm-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
+  padding: .65rem .75rem;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--border);
+  background: var(--white);
+  font-size: .88rem;
+  font-weight: 600;
+  color: var(--text-mid);
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.pm-tab:hover { border-color: var(--blue); color: var(--blue); }
+.pm-tab.active { border-color: var(--blue); background: var(--blue-light); color: var(--blue); }
+
+/* ─── PayNow panel ───────────────────────────────── */
+.paynow-wrap { display: flex; flex-direction: column; align-items: center; text-align: center; }
+
+.paynow-amount-label {
+  font-size: .9rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.paynow-qr-card {
+  background: var(--white);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .75rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.paynow-qr-svg {
+  width: 160px;
+  height: 160px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px;
+  background: #fff;
+}
+
+.paynow-uen { text-align: center; }
+
+.paynow-uen-label {
+  font-size: .72rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.paynow-uen-val {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #9b1fe8;
+  letter-spacing: .06em;
+}
+
+.paynow-steps {
+  text-align: left;
+  font-size: .88rem;
+  color: var(--text-mid);
+  padding-left: 1.25rem;
+  margin-bottom: 1.25rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: .45rem;
+}
+
+.paynow-inline-price { font-weight: 800; color: #9b1fe8; }
+
 /* ─── Responsive ──────────────────────────────── */
 @media (max-width: 820px) {
+  #services-map { height: 340px; }
+  .map-category-pills { gap: .35rem; }
+  .map-pill { padding: .28rem .65rem; font-size: .78rem; }
   .listings-layout { grid-template-columns: 1fr; }
 
   .filters-panel {
@@ -892,6 +1227,9 @@ input[type="range"] {
   .form-row { grid-template-columns: 1fr; }
   .hero { padding: 3rem 1rem 2.5rem; }
   .confirmation-card { padding: 1.8rem 1.25rem; }
+  #services-map { height: 280px; }
+  .pm-tabs { flex-direction: column; }
+  .paynow-qr-svg { width: 130px; height: 130px; }
 }
 
 @media (max-width: 480px) {

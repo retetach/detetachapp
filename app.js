@@ -1,294 +1,332 @@
 /* ═══════════════════════════════════════════════════
-   HomeServe — app.js
-   Home services booking platform
+   HomeServe SG — app.js
+   Singapore home services booking platform
 ═══════════════════════════════════════════════════ */
 
 'use strict';
 
-/* ─── Seed data: service providers ─────────────── */
+/* ─── Category colours (used for map markers + badges) ── */
+const CAT_COLORS = {
+  cleaning:   '#6366f1',
+  aircon:     '#0ea5e9',
+  plumbing:   '#2563eb',
+  electrical: '#f59e0b',
+  gardening:  '#16a34a',
+  painting:   '#db2777',
+  handyman:   '#7c3aed',
+  pest:       '#dc2626',
+};
+
+/* ─── Seed data: Singapore service providers ─────── */
 const PROVIDERS = [
   {
     id: 'p1',
-    name: 'Sparkle Clean Co.',
+    name: 'SparkleMaid Services',
     category: 'cleaning',
-    tagline: 'Professional home & office cleaning since 2015',
+    tagline: 'Part-time maid & deep cleaning — trusted since 2015',
     icon: '🧹',
-    about: 'We are a family-run cleaning business serving the local area for over 9 years. Our team is fully DBS-checked, insured, and trained to the highest standards. We use eco-friendly products and bring all equipment.',
+    about: 'Family-run home cleaning service with 9 years of experience across Singapore. Our cleaners are police-checked, trained and carry public liability insurance. Eco-friendly supplies included.',
     rating: 4.9,
     reviews: 214,
     price: 28,
-    location: 'Central & North District',
-    zip: ['10001','10002','10003','SW1A','WC1','EC1'],
-    weekend: true,
-    evening: true,
+    priceUnit: 'hr',
+    location: 'Toa Payoh / Bishan',
+    lat: 1.3344, lng: 103.8467,
+    zip: ['31','32','33','57','56'],
+    weekend: true, evening: true,
+    license: 'BizSafe Certified',
     services: [
-      { name: 'Regular clean (2 hrs)',    price: 56 },
-      { name: 'Deep clean (4 hrs)',        price: 112 },
-      { name: 'End-of-tenancy clean',      price: 180 },
-      { name: 'Oven / appliance clean',    price: 65 },
-      { name: 'Post-construction clean',   price: 220 },
+      { name: 'Part-time maid (3 hrs)',     price: 84 },
+      { name: 'Spring clean (5 hrs)',        price: 140 },
+      { name: 'Move-in / move-out clean',   price: 250 },
+      { name: 'Post-renovation clean',      price: 350 },
+      { name: 'Office cleaning (per visit)',price: 120 },
     ],
     reviewList: [
-      { name: 'Sarah M.', stars: 5, date: 'Feb 2026', text: 'Absolutely immaculate job. The team arrived on time and worked tirelessly for 3 hours. My flat has never looked this clean!' },
-      { name: 'James T.', stars: 5, date: 'Jan 2026', text: 'Used them for an end-of-tenancy clean and got my full deposit back. Highly recommend!' },
-      { name: 'Priya K.', stars: 4, date: 'Dec 2025', text: 'Very professional and thorough. Would have given 5 stars but they were 10 minutes late.' },
+      { name: 'Wei Ming L.',  stars: 5, date: 'Feb 2026', text: 'The auntie who came was so thorough! My flat has never been this clean. Will definitely hire again every fortnight.' },
+      { name: 'Siti N.',      stars: 5, date: 'Jan 2026', text: 'Used them for move-in cleaning of new BTO. Absolutely spotless. Neighbours asked for the contact!' },
+      { name: 'Rajesh K.',    stars: 4, date: 'Dec 2025', text: 'Good work overall, very careful with our fragile items. Minor timing issue but resolved quickly. Would use again.' },
     ],
   },
   {
     id: 'p2',
-    name: 'AquaFix Plumbing',
-    category: 'plumbing',
-    tagline: 'Trusted plumbers — no call-out fee, fixed prices',
-    icon: '🔧',
-    about: 'AquaFix has been solving plumbing problems across the area since 2010. From emergency repairs to full bathroom installations, our Gas Safe registered engineers handle it all with a smile and a guarantee.',
-    rating: 4.7,
-    reviews: 189,
-    price: 65,
-    location: 'City-wide coverage',
-    zip: ['10001','10002','10004','SW1A','SW1B','WC2'],
-    weekend: true,
-    evening: false,
+    name: 'CoolBreeze Aircon',
+    category: 'aircon',
+    tagline: 'All brands serviced — fast response, honest pricing',
+    icon: '❄️',
+    about: 'NEA-licensed aircon specialist serving East Singapore since 2012. We service all brands — Mitsubishi, Daikin, Panasonic, Midea and more. Chemical washes, gas top-ups, and full system installations available.',
+    rating: 4.8,
+    reviews: 327,
+    price: 35,
+    priceUnit: 'unit',
+    location: 'Tampines / Pasir Ris',
+    lat: 1.3545, lng: 103.9434,
+    zip: ['52','51','82'],
+    weekend: true, evening: false,
+    license: 'NEA Licensed',
     services: [
-      { name: 'Leak detection & repair',   price: 85 },
-      { name: 'Boiler service',            price: 90 },
-      { name: 'Tap replacement',           price: 75 },
-      { name: 'Bathroom installation',     price: 950 },
-      { name: 'Drain unblocking',          price: 95 },
+      { name: 'General service (per unit)',  price: 35 },
+      { name: 'Chemical wash (per unit)',    price: 80 },
+      { name: 'Chemical overhaul',           price: 120 },
+      { name: 'Gas top-up (R22/R410A)',      price: 60 },
+      { name: 'New unit installation',       price: 400 },
     ],
     reviewList: [
-      { name: 'David L.', stars: 5, date: 'Mar 2026', text: 'Fixed our burst pipe at 7am on a Saturday. Incredible service, very fair pricing.' },
-      { name: 'Emma R.', stars: 5, date: 'Feb 2026', text: 'Boiler service done efficiently. Engineer was friendly and explained everything clearly.' },
-      { name: 'Tom B.', stars: 4, date: 'Jan 2026', text: 'Good work overall. Slightly expensive but the quality justified it.' },
+      { name: 'Huang Jun H.', stars: 5, date: 'Mar 2026', text: 'Booked at 9am, technician arrived by 11am. Aircon blows so cold now. Very fast lah!' },
+      { name: 'Nurul A.',     stars: 5, date: 'Feb 2026', text: 'Very honest! They told me I only needed a standard wash, not the expensive overhaul. Saved $80. Very trustworthy.' },
+      { name: 'Ahmad R.',     stars: 4, date: 'Jan 2026', text: 'Professional and explained everything clearly before starting. Fair pricing. Will book again.' },
     ],
   },
   {
     id: 'p3',
-    name: 'BrightWire Electrical',
-    category: 'electrical',
-    tagline: 'NICEIC certified electricians — safe, reliable, affordable',
-    icon: '⚡',
-    about: 'BrightWire is a NICEIC certified electrical contractor. We cover everything from consumer unit upgrades and EV charger installation to fault-finding and lighting design. All work is certified and guaranteed.',
-    rating: 4.8,
-    reviews: 143,
-    price: 70,
-    location: 'East & South Zones',
-    zip: ['10002','10003','10005','E1','E2','SE1'],
-    weekend: false,
-    evening: true,
+    name: 'PipePro Plumbing',
+    category: 'plumbing',
+    tagline: 'PUB-licensed — no call-out fee, same-day service',
+    icon: '🔧',
+    about: 'PUB-licensed plumber with 12 years of HDB and condo experience across Singapore. Transparent pricing before we start — no hidden fees. Emergency same-day service available island-wide.',
+    rating: 4.7,
+    reviews: 189,
+    price: 80,
+    priceUnit: 'hr',
+    location: 'Jurong West / Boon Lay',
+    lat: 1.3404, lng: 103.6990,
+    zip: ['64','61','62','63','65','66'],
+    weekend: true, evening: false,
+    license: 'PUB Licensed',
     services: [
-      { name: 'Electrical safety inspection', price: 120 },
-      { name: 'Consumer unit upgrade',        price: 550 },
-      { name: 'EV charger installation',      price: 650 },
-      { name: 'Socket / switch installation', price: 85 },
-      { name: 'Fault finding & repair',       price: 95 },
+      { name: 'Choke clearing (basin/toilet)', price: 80 },
+      { name: 'Tap / faucet replacement',      price: 90 },
+      { name: 'Water heater installation',     price: 250 },
+      { name: 'Toilet bowl replacement',       price: 320 },
+      { name: 'Pipe leak repair',              price: 120 },
     ],
     reviewList: [
-      { name: 'Alice N.', stars: 5, date: 'Feb 2026', text: 'Had our consumer unit replaced. The team was professional, tidy and completed on time. Certificates issued same day.' },
-      { name: 'Mark S.', stars: 5, date: 'Feb 2026', text: 'Installed our EV charger in just a couple of hours. Brilliant service.' },
-      { name: 'Lucy F.', stars: 4, date: 'Jan 2026', text: 'Very knowledgeable. Found the fault quickly and fixed it. Would use again.' },
+      { name: 'Lim Ah K.', stars: 5, date: 'Feb 2026', text: 'Toilet choke on a Sunday night. They came within 2 hours and fixed it quickly. Fair price, no hidden charges. 5 stars!' },
+      { name: 'Kavitha P.', stars: 5, date: 'Jan 2026', text: 'Replaced our water heater so professionally. Explained warranty and maintenance tips. Very satisfied.' },
+      { name: 'Jason T.',   stars: 4, date: 'Jan 2026', text: 'Good work fixing our leaky pipe under the sink. Slightly pricier than I expected but quality was solid.' },
     ],
   },
   {
     id: 'p4',
-    name: 'GreenThumb Gardens',
-    category: 'gardening',
-    tagline: 'Transforming outdoor spaces with passion and expertise',
-    icon: '🌿',
-    about: 'GreenThumb Gardens is run by qualified horticulturalists who love what they do. We offer one-off tidy-ups, regular maintenance contracts, and full landscape design services. Your garden is in safe hands.',
-    rating: 4.6,
-    reviews: 98,
-    price: 35,
-    location: 'Suburbs & Rural',
-    zip: ['10003','10005','10006','N1','N4','NW3'],
-    weekend: true,
-    evening: false,
+    name: 'BrightSpark Electrical',
+    category: 'electrical',
+    tagline: 'EMA-licensed electricians — safe, fast, certified',
+    icon: '⚡',
+    about: 'EMA-licensed electrical contractor serving North Singapore HDBs and condos. We handle DB box replacements, fan installations, lighting upgrades, CCTV and all electrical faults. Work certified and insured.',
+    rating: 4.8,
+    reviews: 143,
+    price: 90,
+    priceUnit: 'hr',
+    location: 'Ang Mo Kio / Yishun',
+    lat: 1.3699, lng: 103.8461,
+    zip: ['56','57','76','77','78'],
+    weekend: false, evening: true,
+    license: 'EMA Licensed',
     services: [
-      { name: 'Garden tidy / clearance',   price: 120 },
-      { name: 'Lawn mowing & edging',      price: 45 },
-      { name: 'Hedge trimming',            price: 65 },
-      { name: 'Planting & landscaping',    price: 200 },
-      { name: 'Regular maintenance (monthly)', price: 80 },
+      { name: 'DB box replacement',         price: 600 },
+      { name: 'Ceiling fan installation',   price: 100 },
+      { name: 'Light fixture installation', price: 80 },
+      { name: 'Power socket installation',  price: 90 },
+      { name: 'Electrical fault diagnosis', price: 100 },
     ],
     reviewList: [
-      { name: 'Helen P.', stars: 5, date: 'Feb 2026', text: 'My garden looked completely overgrown before. Now it looks like something from a magazine. Exceptional work!' },
-      { name: 'Robert K.', stars: 4, date: 'Jan 2026', text: 'Reliable and friendly. Been using them for monthly maintenance for a year now.' },
-      { name: 'Claire D.', stars: 5, date: 'Nov 2025', text: 'Planted a whole new border for us. Really listened to what we wanted. Love the result.' },
+      { name: 'Sandra L.',   stars: 5, date: 'Mar 2026', text: 'DB box replaced in 4 hours with minimal disruption. Certification issued same day. Very professional team.' },
+      { name: 'Faridah B.',  stars: 5, date: 'Feb 2026', text: 'Installed fans and light fixtures in our new flat. Professional team and clean work. Highly recommended!' },
+      { name: 'Kevin C.',    stars: 4, date: 'Jan 2026', text: 'Fixed an electrical fault two other electricians couldn\'t find. Worth every dollar. Very knowledgeable.' },
     ],
   },
   {
     id: 'p5',
-    name: 'Colour Crafters',
-    category: 'painting',
-    tagline: 'Interior & exterior painting done to perfection',
-    icon: '🎨',
-    about: 'Colour Crafters is a team of skilled painters and decorators with 15 years of experience. We pride ourselves on meticulous preparation and a flawless finish. Fully insured, references available on request.',
-    rating: 4.7,
-    reviews: 127,
-    price: 40,
-    location: 'West Side & Suburbs',
-    zip: ['10001','10004','10006','W1','W2','SW6'],
-    weekend: true,
-    evening: false,
+    name: 'Greenscapes SG',
+    category: 'gardening',
+    tagline: 'NParks-certified landscapers — landed homes & condos',
+    icon: '🌿',
+    about: 'NParks-certified horticulturalists specialising in tropical gardens for landed properties, condo balconies, and HDB void deck greenery. From routine maintenance to full landscape design — we bring nature home.',
+    rating: 4.6,
+    reviews: 98,
+    price: 45,
+    priceUnit: 'hr',
+    location: 'Holland Village / Buona Vista',
+    lat: 1.3114, lng: 103.7960,
+    zip: ['27','26','11','12','13'],
+    weekend: true, evening: false,
+    license: 'NParks Certified',
     services: [
-      { name: 'Room painting (per room)',  price: 180 },
-      { name: 'Exterior house paint',      price: 800 },
-      { name: 'Wallpaper hanging',         price: 150 },
-      { name: 'Feature wall',              price: 140 },
-      { name: 'Fence & decking stain',     price: 180 },
+      { name: 'Monthly garden maintenance',  price: 120 },
+      { name: 'Grass cutting & edging',      price: 80 },
+      { name: 'Tree & shrub pruning',        price: 100 },
+      { name: 'Balcony garden setup',        price: 300 },
+      { name: 'Landscape design & planting', price: 500 },
     ],
     reviewList: [
-      { name: 'Fiona W.', stars: 5, date: 'Mar 2026', text: 'Painted our entire ground floor. Preparation was thorough and the finish is absolutely perfect. Worth every penny.' },
-      { name: 'Gary H.', stars: 4, date: 'Jan 2026', text: 'Excellent work on our exterior. Took a little longer than expected but quality is superb.' },
-      { name: 'Sandra O.', stars: 5, date: 'Dec 2025', text: 'Hung our new wallpaper and it looks stunning. Will use again for the upstairs rooms.' },
+      { name: 'Patricia S.', stars: 5, date: 'Feb 2026', text: 'Transformed our condo balcony into a lush tropical garden. So professional and creative. Worth every dollar!' },
+      { name: 'Ivan L.',     stars: 4, date: 'Jan 2026', text: 'Reliable monthly service. The garden always looks well-kept. Very happy with the regular arrangement.' },
+      { name: 'Mei Lin T.',  stars: 5, date: 'Nov 2025', text: 'Designed and planted our private landed garden. They really listened to what we wanted. Love the result!' },
     ],
   },
   {
     id: 'p6',
-    name: 'CoolAir HVAC Solutions',
-    category: 'hvac',
-    tagline: 'Gas Safe & F-Gas certified heating & cooling engineers',
-    icon: '❄️',
-    about: 'CoolAir provides expert heating, ventilation and air conditioning services to homes and small businesses. Gas Safe registered and F-Gas certified. We offer same-day emergency callouts and annual service plans.',
-    rating: 4.5,
-    reviews: 76,
-    price: 75,
-    location: 'Metro Coverage',
-    zip: ['10001','10002','10003','10004','SW1A','WC1'],
-    weekend: false,
-    evening: false,
+    name: 'HDB PaintPro',
+    category: 'painting',
+    tagline: 'HDB specialist — Nippon & Dulux, clean workmanship',
+    icon: '🎨',
+    about: 'Specialist in HDB and condo interior painting across Singapore. We use premium Nippon Paint and Dulux with full surface preparation — sanding, sealing and primer. Dust-minimised workmanship guaranteed.',
+    rating: 4.7,
+    reviews: 127,
+    price: 50,
+    priceUnit: 'hr',
+    location: 'Queenstown / Buona Vista',
+    lat: 1.2981, lng: 103.8053,
+    zip: ['14','15','11','12','13'],
+    weekend: true, evening: false,
+    license: 'BizSafe Certified',
     services: [
-      { name: 'Boiler repair',             price: 130 },
-      { name: 'Air-con installation',      price: 1200 },
-      { name: 'Annual heating service',    price: 99 },
-      { name: 'Radiator installation',     price: 180 },
-      { name: 'Thermostat upgrade',        price: 120 },
+      { name: '3-room HDB painting',    price: 800 },
+      { name: '4-room HDB painting',    price: 1100 },
+      { name: '5-room HDB painting',    price: 1350 },
+      { name: 'Single room painting',   price: 300 },
+      { name: 'Touch-up & repainting',  price: 180 },
     ],
     reviewList: [
-      { name: 'Martin G.', stars: 5, date: 'Feb 2026', text: 'Boiler broke on the coldest night of the year. CoolAir had it fixed by 10am. Amazing service.' },
-      { name: 'Diane S.', stars: 4, date: 'Jan 2026', text: 'Annual service done promptly. Gave good advice on improving efficiency.' },
-      { name: 'Patrick F.', stars: 5, date: 'Nov 2025', text: 'Had a split AC installed. Competitive price and spotless work.' },
+      { name: 'Grace T.',  stars: 5, date: 'Mar 2026', text: 'Painted our whole 4-room HDB. The finish was flawless and the team was clean and tidy. Very pleased with the result!' },
+      { name: 'Muthu K.', stars: 5, date: 'Feb 2026', text: 'Excellent workmanship at a very reasonable price. Will definitely use again for our kitchen repaint.' },
+      { name: 'Jenny O.', stars: 4, date: 'Jan 2026', text: 'Good quality work. Appreciated that they covered all furniture and mopped the floor before leaving.' },
     ],
   },
   {
     id: 'p7',
-    name: 'Handy Hands',
+    name: 'FixIt Handyman SG',
     category: 'handyman',
-    tagline: 'Your local fix-it-all service — no job too small',
+    tagline: 'TV mounting, furniture assembly, HDB repairs & more',
     icon: '🔨',
-    about: 'Handy Hands is your friendly local handyman service. We handle furniture assembly, picture hanging, minor repairs, door adjustments, and much more. Honest pricing and a smile guaranteed.',
-    rating: 4.8,
+    about: 'Your reliable one-stop handyman for all HDB and condo repairs. TV mounting, IKEA furniture assembly, door adjustments, shelf installation and minor plumbing. Honest, upfront pricing — no hidden fees.',
+    rating: 4.9,
     reviews: 302,
-    price: 45,
-    location: 'All Areas',
-    zip: ['10001','10002','10003','10004','10005','10006','SW1A','WC1','EC1','E1','N1','W1'],
-    weekend: true,
-    evening: true,
+    price: 60,
+    priceUnit: 'hr',
+    location: 'Bedok / Tampines',
+    lat: 1.3242, lng: 103.9255,
+    zip: ['46','47','48','52','51'],
+    weekend: true, evening: true,
+    license: 'BizSafe Certified',
     services: [
-      { name: 'Furniture assembly',        price: 60 },
-      { name: 'Picture / mirror hanging',  price: 45 },
-      { name: 'Door / lock repair',        price: 70 },
-      { name: 'Shelving installation',     price: 80 },
-      { name: 'General repairs (hourly)',  price: 45 },
+      { name: 'TV wall mounting',             price: 80 },
+      { name: 'IKEA furniture assembly',      price: 70 },
+      { name: 'HDB shelving installation',    price: 100 },
+      { name: 'Door hinge / lock repair',     price: 80 },
+      { name: 'General repairs (hourly)',     price: 60 },
     ],
     reviewList: [
-      { name: 'Wendy C.', stars: 5, date: 'Mar 2026', text: 'Assembled a complex wardrobe in 2 hours. Efficient, tidy and great value. Booked again immediately.' },
-      { name: 'Ben A.', stars: 5, date: 'Feb 2026', text: 'Fixed several doors, hung mirrors and put up shelves. All done in one visit. Brilliant!' },
-      { name: 'Laura M.', stars: 5, date: 'Feb 2026', text: 'Incredibly reliable. Used them 4 times now and never been disappointed.' },
+      { name: 'Mark C.',   stars: 5, date: 'Mar 2026', text: 'Assembled 3 IKEA pieces and mounted 2 TVs in one visit. Super efficient and affordable. Best handyman I\'ve found!' },
+      { name: 'Amirah Y.',stars: 5, date: 'Feb 2026', text: 'Fixed our bedroom door and installed shelves. Very polite, neat, and fast. Highly recommend!' },
+      { name: 'Daniel F.', stars: 5, date: 'Feb 2026', text: 'Used them 5 times now. Always reliable, always does a great job. My go-to for all HDB repairs.' },
     ],
   },
   {
     id: 'p8',
-    name: 'BugBusters Pest Control',
+    name: 'NoPest SG',
     category: 'pest',
-    tagline: 'Fast, discrete & effective pest elimination',
+    tagline: 'NEA-licensed — termites, dengue, cockroaches & more',
     icon: '🪲',
-    about: 'BugBusters are fully BPCA-certified pest control technicians. We deal with rodents, insects, bed bugs and more. All treatments are safe for children and pets when correctly followed. Guaranteed results.',
+    about: 'NEA-licensed pest control operator for HDB and landed homes across Singapore. We handle cockroaches, rodents, termites, bed bugs and dengue mosquitoes. All chemicals are safe for children and pets.',
     rating: 4.6,
     reviews: 88,
-    price: 80,
-    location: 'City & Suburbs',
-    zip: ['10001','10002','10003','10004','10005','SW1A','E1','N1'],
-    weekend: true,
-    evening: false,
+    price: 120,
+    priceUnit: 'treatment',
+    location: 'Woodlands / Sembawang',
+    lat: 1.4369, lng: 103.7869,
+    zip: ['73','75','76','72','71'],
+    weekend: true, evening: false,
+    license: 'NEA Licensed',
     services: [
-      { name: 'Rodent treatment',          price: 150 },
-      { name: 'Insect / cockroach treatment', price: 120 },
-      { name: 'Bed bug treatment',         price: 250 },
-      { name: 'Wasp nest removal',         price: 95 },
-      { name: 'Commercial pest survey',    price: 200 },
+      { name: 'Cockroach baiting & treatment', price: 120 },
+      { name: 'Rodent trapping & control',     price: 180 },
+      { name: 'Termite treatment (per visit)', price: 400 },
+      { name: 'Bed bug heat treatment',        price: 350 },
+      { name: 'Dengue mosquito fogging',       price: 100 },
     ],
     reviewList: [
-      { name: 'Natalie R.', stars: 5, date: 'Jan 2026', text: 'Had a mouse problem for weeks. One visit and they were completely gone. Professional and discreet.' },
-      { name: 'Chris B.', stars: 4, date: 'Dec 2025', text: 'Quick to respond and sorted the issue efficiently. Would recommend.' },
-      { name: 'Jenny T.', stars: 5, date: 'Nov 2025', text: 'Discovered a wasp nest in our loft. BugBusters removed it safely the same day. Excellent.' },
+      { name: 'Eric T.',    stars: 5, date: 'Jan 2026', text: 'Cockroach problem at my HDB solved in one session. The technician was very professional and explained everything clearly.' },
+      { name: 'Noraini M.', stars: 5, date: 'Dec 2025', text: 'Found termites in our door frame. NoPest treated it quickly and gave us a 6-month warranty. Very reassuring.' },
+      { name: 'Stephen L.', stars: 4, date: 'Nov 2025', text: 'Quick response for mosquito fogging ahead of a family event. The whole condo smelled fresh after. Will book again.' },
     ],
   },
   {
     id: 'p9',
-    name: 'Gleam & Shine Cleaners',
-    category: 'cleaning',
-    tagline: 'Affordable, reliable domestic cleaning',
-    icon: '🧹',
-    about: 'Gleam & Shine offers budget-friendly domestic cleaning without cutting corners on quality. Our trained cleaners are police-checked and fully insured. Perfect for weekly or fortnightly top-up cleans.',
-    rating: 4.4,
-    reviews: 156,
-    price: 22,
-    location: 'South & West Areas',
-    zip: ['10004','10005','10006','SW6','W4','W5','TW1'],
-    weekend: false,
-    evening: true,
+    name: 'IceCold Aircon',
+    category: 'aircon',
+    tagline: 'Budget-friendly aircon servicing — West Singapore',
+    icon: '❄️',
+    about: 'Affordable aircon servicing for HDB and condo units in West Singapore. Our trained technicians cover all major brands. Regular maintenance packages available for great long-term savings.',
+    rating: 4.7,
+    reviews: 211,
+    price: 30,
+    priceUnit: 'unit',
+    location: 'Clementi / West Coast',
+    lat: 1.3152, lng: 103.7649,
+    zip: ['12','11','13','59','58','21'],
+    weekend: false, evening: false,
+    license: 'NEA Licensed',
     services: [
-      { name: 'Standard clean (2 hrs)',    price: 44 },
-      { name: 'Spring clean (3 hrs)',      price: 66 },
-      { name: 'Carpet vacuum & steam',     price: 50 },
-      { name: 'Window cleaning (interior)',price: 35 },
+      { name: 'General service (per unit)',          price: 30 },
+      { name: 'Chemical wash (per unit)',            price: 70 },
+      { name: 'Chemical overhaul (per unit)',        price: 100 },
+      { name: 'Condenser coil wash',                 price: 80 },
+      { name: '4-unit package (×4 services)',        price: 320 },
     ],
     reviewList: [
-      { name: 'Becky J.', stars: 4, date: 'Feb 2026', text: 'Great value for money. Always leaves the house spotless. Very happy with the regular service.' },
-      { name: 'Mike V.', stars: 5, date: 'Jan 2026', text: 'Friendly cleaner who goes above and beyond. Thoroughly recommended.' },
-      { name: 'Lisa E.', stars: 4, date: 'Dec 2025', text: 'Good quality clean. Occasionally have to remind about a few spots but overall very happy.' },
+      { name: 'Alvin G.',   stars: 5, date: 'Feb 2026', text: 'Serviced 3 units for only S$90. Aircon blowing cold again after months of being warm. Will book every 3 months.' },
+      { name: 'Susan K.',   stars: 4, date: 'Jan 2026', text: 'Reliable and punctual. On a maintenance plan for 2 years — aircon has been trouble-free since. Great value.' },
+      { name: 'Raymond L.', stars: 5, date: 'Jan 2026', text: 'Chemical overhaul done so professionally. Aircon looks brand new. Great value for the price.' },
     ],
   },
   {
     id: 'p10',
-    name: 'Swift Sparks Electrical',
-    category: 'electrical',
-    tagline: 'Emergency electrical service — available 24/7',
-    icon: '⚡',
-    about: 'Swift Sparks specialises in rapid-response electrical repairs and installations. Fully qualified Part P electricians available around the clock. Fixed prices, no hidden extras, job done right first time.',
+    name: 'HomeShine Cleaners',
+    category: 'cleaning',
+    tagline: 'Affordable regular & deep cleaning — Northeast SG',
+    icon: '🧹',
+    about: 'Reliable home cleaning for HDB and condo households in Northeast Singapore. All cleaners are police-checked, trained and bring eco-friendly supplies. Flexible one-time or regular packages available.',
     rating: 4.5,
-    reviews: 112,
-    price: 80,
-    location: 'City Centre & North',
-    zip: ['10001','10002','10003','EC1','EC2','N1','NW1'],
-    weekend: true,
-    evening: true,
+    reviews: 156,
+    price: 22,
+    priceUnit: 'hr',
+    location: 'Sengkang / Punggol',
+    lat: 1.3913, lng: 103.8936,
+    zip: ['54','53','82','55','82'],
+    weekend: false, evening: true,
+    license: 'BizSafe Certified',
     services: [
-      { name: 'Emergency callout',         price: 100 },
-      { name: 'Light fixture installation',price: 90 },
-      { name: 'Outdoor / garden lighting', price: 150 },
-      { name: 'Smoke alarm installation',  price: 65 },
-      { name: 'CCTV installation',         price: 350 },
+      { name: 'Regular clean (3 hrs)',     price: 66 },
+      { name: 'Deep clean (5 hrs)',        price: 110 },
+      { name: 'Carpet vacuum & shampoo',   price: 50 },
+      { name: 'Window & glass cleaning',   price: 40 },
+      { name: 'Kitchen deep clean',        price: 80 },
     ],
     reviewList: [
-      { name: 'Andrew S.', stars: 5, date: 'Mar 2026', text: 'Power cut on a Sunday night. Swift Sparks arrived in 40 minutes and fixed the fuse. Lifesavers!' },
-      { name: 'Carol P.', stars: 4, date: 'Feb 2026', text: 'Installed a CCTV system for us. Good quality equipment and neat installation.' },
-      { name: 'Neil H.', stars: 5, date: 'Jan 2026', text: 'Had all the smoke alarms replaced. Quick, cheap and professional.' },
+      { name: 'Yong Ling T.', stars: 4, date: 'Feb 2026', text: 'Good value for money. Reliable cleaner every fortnight. The flat is always spotless when I get home from work.' },
+      { name: 'Haziq A.',     stars: 5, date: 'Jan 2026', text: 'Used for move-out cleaning of my rental. Landlord returned full deposit. Highly recommend for end-of-tenancy!' },
+      { name: 'Preethi R.',   stars: 4, date: 'Dec 2025', text: 'Thorough cleaning, always on time. Minor communication issue once but was resolved promptly. Will continue.' },
     ],
   },
 ];
 
 /* ─── App state ──────────────────────────────────── */
 const state = {
-  searchZip:        '',
-  searchCategory:   '',
-  filteredResults:  [...PROVIDERS],
-  sortedResults:    [...PROVIDERS],
-  currentProvider:  null,
-  booking:          {},
-  bookings:         JSON.parse(localStorage.getItem('hs_bookings') || '[]'),
-  prevPage:         'home',
+  searchZip:       '',
+  searchCategory:  '',
+  filteredResults: [...PROVIDERS],
+  sortedResults:   [...PROVIDERS],
+  currentProvider: null,
+  booking:         {},
+  bookings:        JSON.parse(localStorage.getItem('hs_sg_bookings') || '[]'),
+  paymentMethod:   'card',
 };
+
+/* ─── Map state ──────────────────────────────────── */
+let map           = null;
+let mapInitialized = false;
+const mapMarkers  = []; // { marker, provider }
 
 /* ─── Page routing ───────────────────────────────── */
 function showPage(id) {
@@ -298,6 +336,85 @@ function showPage(id) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
   if (id === 'my-bookings') renderMyBookings();
+  if (id === 'home' && !mapInitialized) setTimeout(initMap, 100);
+}
+
+/* ─── Map initialisation ─────────────────────────── */
+function initMap() {
+  if (mapInitialized || typeof L === 'undefined') return;
+  mapInitialized = true;
+
+  map = L.map('services-map', {
+    center: [1.3521, 103.8198],
+    zoom: 11,
+    scrollWheelZoom: false,
+    zoomControl: true,
+  });
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
+    maxZoom: 18,
+  }).addTo(map);
+
+  PROVIDERS.forEach(addMapMarker);
+  setTimeout(() => map.invalidateSize(), 300);
+}
+
+function addMapMarker(p) {
+  const color = CAT_COLORS[p.category] || '#2563eb';
+
+  const icon = L.divIcon({
+    className: 'hs-marker',
+    html: `<div class="hs-marker-pin" style="background:${color}" title="${p.name}">
+             <span class="hs-marker-emoji">${p.icon}</span>
+           </div>
+           <div class="hs-marker-label">S$${p.price}</div>`,
+    iconSize: [44, 58],
+    iconAnchor: [22, 58],
+    popupAnchor: [0, -62],
+  });
+
+  const popup = L.popup({ maxWidth: 230, className: 'hs-popup' }).setContent(`
+    <div class="map-popup">
+      <div class="map-popup-head" style="background:${color}">
+        <span class="map-popup-ico" aria-hidden="true">${p.icon}</span>
+        <span class="map-popup-catbadge">${categoryLabel(p.category)}</span>
+      </div>
+      <div class="map-popup-body">
+        <div class="map-popup-name">${p.name}</div>
+        <div class="map-popup-meta">
+          <span class="map-popup-stars">★ ${p.rating}</span>
+          <span class="map-popup-rc">(${p.reviews})</span>
+          <span class="map-popup-price">S$${p.price}/${p.priceUnit}</span>
+        </div>
+        <div class="map-popup-loc">📍 ${p.location}</div>
+        <div class="map-popup-lic">${p.license}</div>
+        <button class="map-popup-btn" onclick="viewProviderFromMap('${p.id}')">View &amp; Book →</button>
+      </div>
+    </div>
+  `);
+
+  const marker = L.marker([p.lat, p.lng], { icon }).addTo(map).bindPopup(popup);
+  mapMarkers.push({ marker, provider: p });
+}
+
+function filterMapMarkers(btn, cat) {
+  // Update pill active state
+  document.querySelectorAll('.map-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+
+  // Show / dim markers
+  mapMarkers.forEach(({ marker, provider }) => {
+    const show = !cat || provider.category === cat;
+    marker.setOpacity(show ? 1 : 0.2);
+    const el = marker.getElement();
+    if (el) el.style.pointerEvents = show ? '' : 'none';
+  });
+}
+
+function viewProviderFromMap(id) {
+  if (map) map.closePopup();
+  viewProvider(id);
 }
 
 /* ─── Search ─────────────────────────────────────── */
@@ -324,8 +441,11 @@ function renderListings(zip, category) {
   let results = [...PROVIDERS];
 
   if (zip) {
+    const q = zip.toLowerCase();
     results = results.filter(p =>
-      p.zip.some(z => z.toUpperCase().startsWith(zip) || zip.startsWith(z.toUpperCase()))
+      p.zip.some(z => z.toLowerCase().startsWith(q) || q.startsWith(z.toLowerCase())) ||
+      p.location.toLowerCase().includes(q) ||
+      p.name.toLowerCase().includes(q)
     );
   }
 
@@ -343,7 +463,7 @@ function renderListings(zip, category) {
   document.getElementById('listings-title').textContent =
     `${state.sortedResults.length} provider${state.sortedResults.length !== 1 ? 's' : ''} found`;
   document.getElementById('listings-subtitle').textContent =
-    `${catLabel}${zip ? ` · Near ${zip}` : ''}`;
+    `${catLabel}${zip ? ` · Near ${zip}` : ' · Singapore'}`;
 
   renderGrid(state.sortedResults);
   resetFilters();
@@ -356,7 +476,7 @@ function renderGrid(providers) {
     grid.innerHTML = `
       <div class="no-results">
         <h3>No providers found</h3>
-        <p>Try a different postcode or service category, or <a href="#" onclick="quickSearch(''); return false;">browse all providers</a>.</p>
+        <p>Try a different postal code or area name, or <a href="#" onclick="quickSearch(''); return false;">browse all providers</a>.</p>
       </div>`;
     return;
   }
@@ -364,10 +484,10 @@ function renderGrid(providers) {
   grid.innerHTML = providers.map(p => `
     <article class="listing-card" onclick="viewProvider('${p.id}')" tabindex="0"
              onkeydown="if(event.key==='Enter')viewProvider('${p.id}')"
-             aria-label="${p.name}, ${categoryLabel(p.category)}, £${p.price}/hr, ${p.rating} stars">
-      <div class="listing-card-img">
+             aria-label="${p.name}, ${categoryLabel(p.category)}, from S$${p.price}, ${p.rating} stars">
+      <div class="listing-card-img" style="--cat-color:${CAT_COLORS[p.category] || '#2563eb'}">
         <span aria-hidden="true">${p.icon}</span>
-        <span class="listing-category-badge">${categoryLabel(p.category)}</span>
+        <span class="listing-category-badge" style="background:${CAT_COLORS[p.category] || '#2563eb'}">${categoryLabel(p.category)}</span>
       </div>
       <div class="listing-card-body">
         <div class="listing-card-title">${p.name}</div>
@@ -383,7 +503,7 @@ function renderGrid(providers) {
             ${p.rating}
             <span class="review-count">(${p.reviews})</span>
           </div>
-          <div class="listing-price">£${p.price}/hr</div>
+          <div class="listing-price">from S$${p.price}/${p.priceUnit}</div>
         </div>
       </div>
     </article>
@@ -392,20 +512,20 @@ function renderGrid(providers) {
 
 /* ─── Filters & sort ─────────────────────────────── */
 function updatePriceLabel(val) {
-  document.getElementById('price-label').textContent = `Up to £${val}/hr`;
+  document.getElementById('price-label').textContent = `Up to S$${val}`;
 }
 
 function applyFilters() {
-  const maxPrice     = parseInt(document.getElementById('price-filter').value, 10);
-  const minRating    = parseFloat(document.getElementById('rating-filter').value);
-  const wantWeekend  = document.getElementById('avail-weekend').checked;
-  const wantEvening  = document.getElementById('avail-evening').checked;
+  const maxPrice    = parseInt(document.getElementById('price-filter').value, 10);
+  const minRating   = parseFloat(document.getElementById('rating-filter').value);
+  const wantWeekend = document.getElementById('avail-weekend').checked;
+  const wantEvening = document.getElementById('avail-evening').checked;
 
-  let results = state.filteredResults.filter(p => {
-    if (p.price > maxPrice)           return false;
-    if (p.rating < minRating)         return false;
-    if (wantWeekend && !p.weekend)    return false;
-    if (wantEvening && !p.evening)    return false;
+  const results = state.filteredResults.filter(p => {
+    if (p.price > maxPrice)         return false;
+    if (p.rating < minRating)       return false;
+    if (wantWeekend && !p.weekend)  return false;
+    if (wantEvening && !p.evening)  return false;
     return true;
   });
 
@@ -431,8 +551,8 @@ function sortProviders(arr, key) {
 }
 
 function resetFilters() {
-  document.getElementById('price-filter').value = 200;
-  document.getElementById('price-label').textContent = 'Up to £200/hr';
+  document.getElementById('price-filter').value = 300;
+  document.getElementById('price-label').textContent = 'Up to S$300';
   document.getElementById('rating-filter').value = '0';
   document.getElementById('avail-weekend').checked = false;
   document.getElementById('avail-evening').checked = false;
@@ -447,16 +567,16 @@ function viewProvider(id) {
   const p = PROVIDERS.find(x => x.id === id);
   if (!p) return;
   state.currentProvider = p;
-  state.prevPage = 'listings';
+  const color = CAT_COLORS[p.category] || '#2563eb';
 
   document.getElementById('provider-detail').innerHTML = `
     <div class="provider-hero">
-      <div class="provider-hero-img" aria-hidden="true">${p.icon}</div>
+      <div class="provider-hero-img" style="background:linear-gradient(135deg,${color}22,${color}55)" aria-hidden="true">${p.icon}</div>
       <div class="provider-hero-body">
         <div class="provider-hero-top">
           <h1 class="provider-name">${p.name}</h1>
           <div class="provider-price-block">
-            <div class="provider-price">£${p.price}<span style="font-size:.9rem;font-weight:500">/hr</span></div>
+            <div class="provider-price" style="color:${color}">S$${p.price}<span style="font-size:.9rem;font-weight:500">/${p.priceUnit}</span></div>
             <div class="provider-price-label">starting rate</div>
           </div>
         </div>
@@ -471,11 +591,11 @@ function viewProvider(id) {
           </div>
         </div>
         <div class="provider-tags">
-          <span class="provider-tag">${categoryLabel(p.category)}</span>
+          <span class="provider-tag" style="background:${color}18;color:${color}">${categoryLabel(p.category)}</span>
           ${p.weekend ? '<span class="provider-tag">Weekends</span>' : ''}
           ${p.evening ? '<span class="provider-tag">Evenings</span>' : ''}
+          <span class="provider-tag">${p.license}</span>
           <span class="provider-tag">Fully insured</span>
-          <span class="provider-tag">DBS checked</span>
         </div>
         <p class="provider-about">${p.about}</p>
       </div>
@@ -484,12 +604,12 @@ function viewProvider(id) {
     <div class="provider-layout">
       <div>
         <div class="provider-services-card">
-          <h3>Services &amp; pricing</h3>
+          <h3>Services &amp; pricing <span class="gst-note">(incl. 9% GST)</span></h3>
           <ul class="service-list">
             ${p.services.map(s => `
               <li class="service-item">
                 <span>${s.name}</span>
-                <span class="service-item-price">£${s.price}</span>
+                <span class="service-item-price" style="color:${color}">S$${s.price}</span>
               </li>
             `).join('')}
           </ul>
@@ -499,7 +619,7 @@ function viewProvider(id) {
           <h3>Customer reviews</h3>
           <div class="review-list">
             ${p.reviewList.map(r => `
-              <div class="review-item">
+              <div class="review-item" style="border-left-color:${color}44">
                 <div class="review-header">
                   <span class="reviewer-name">${r.name}</span>
                   <span class="review-date">${r.date}</span>
@@ -515,15 +635,15 @@ function viewProvider(id) {
       <div>
         <div class="booking-cta-card">
           <h3>Book this pro</h3>
-          <div class="cta-price">£${p.price}/hr</div>
-          <div class="cta-price-sub">All prices include VAT</div>
+          <div class="cta-price" style="color:${color}">S$${p.price}<span style="font-size:.85rem;font-weight:500">/${p.priceUnit}</span></div>
+          <div class="cta-price-sub">Prices include 9% GST</div>
           <ul class="cta-features">
             <li><span class="check-icon" aria-hidden="true">✓</span> Instant booking confirmation</li>
-            <li><span class="check-icon" aria-hidden="true">✓</span> Secure online payment</li>
+            <li><span class="check-icon" aria-hidden="true">✓</span> Pay by card or PayNow</li>
             <li><span class="check-icon" aria-hidden="true">✓</span> Free cancellation (24h notice)</li>
-            <li><span class="check-icon" aria-hidden="true">✓</span> Satisfaction guarantee</li>
+            <li><span class="check-icon" aria-hidden="true">✓</span> ${p.license}</li>
           </ul>
-          <button class="btn-primary full-width" onclick="startBooking('${p.id}')">Book now</button>
+          <button class="btn-primary full-width" style="background:${color}" onclick="startBooking('${p.id}')">Book now</button>
         </div>
       </div>
     </div>
@@ -532,16 +652,10 @@ function viewProvider(id) {
   showPage('provider');
 }
 
-function goBackToListings() {
-  showPage('listings');
-}
+function goBackToListings() { showPage('listings'); }
 
 function goBackToProvider() {
-  if (state.currentProvider) {
-    showPage('provider');
-  } else {
-    showPage('listings');
-  }
+  showPage(state.currentProvider ? 'provider' : 'listings');
 }
 
 /* ─── Booking ────────────────────────────────────── */
@@ -550,21 +664,22 @@ function startBooking(id) {
   if (!p) return;
   state.currentProvider = p;
 
+  const color = CAT_COLORS[p.category] || '#2563eb';
+
   document.getElementById('booking-provider-summary').innerHTML = `
     <span class="summary-icon" aria-hidden="true">${p.icon}</span>
     <div class="summary-info">
       <strong>${p.name}</strong>
-      <span>${categoryLabel(p.category)} · £${p.price}/hr</span>
+      <span>${categoryLabel(p.category)} · S$${p.price}/${p.priceUnit} · ${p.location}</span>
     </div>
   `;
+  document.getElementById('booking-provider-summary').style.borderColor = `${color}55`;
 
-  // Set minimum date to tomorrow
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   document.getElementById('b-date').min = tomorrow.toISOString().split('T')[0];
-  document.getElementById('b-date').value = '';
+  document.getElementById('b-date').value  = '';
   document.getElementById('b-duration').value = '1';
-
   updateBookingTotal();
   showPage('booking');
 }
@@ -572,59 +687,70 @@ function startBooking(id) {
 function updateBookingTotal() {
   const p = state.currentProvider;
   if (!p) return;
-  const hours   = parseInt(document.getElementById('b-duration').value, 10) || 1;
-  const total   = p.price * hours;
-  const durText = hours === 1 ? '1 hr' : `${hours} hrs`;
-  document.getElementById('total-label').textContent  = `Total (${durText})`;
-  document.getElementById('total-amount').textContent = `£${total}`;
-  state.booking.total  = total;
-  state.booking.hours  = hours;
+  const qty   = parseInt(document.getElementById('b-duration').value, 10) || 1;
+  const total = p.price * qty;
+  const label = qty === 1 ? `1 ${p.priceUnit}` : `${qty} ${p.priceUnit}s`;
+  document.getElementById('total-label').textContent  = `Total (${label})`;
+  document.getElementById('total-amount').textContent = `S$${total}`;
+  state.booking.total = total;
+  state.booking.qty   = qty;
 }
 
 function proceedToPayment(e) {
   e.preventDefault();
   const p = state.currentProvider;
 
-  state.booking.provider   = p;
-  state.booking.firstName  = document.getElementById('b-first').value.trim();
-  state.booking.lastName   = document.getElementById('b-last').value.trim();
-  state.booking.email      = document.getElementById('b-email').value.trim();
-  state.booking.phone      = document.getElementById('b-phone').value.trim();
-  state.booking.address    = document.getElementById('b-address').value.trim();
-  state.booking.date       = document.getElementById('b-date').value;
-  state.booking.time       = document.getElementById('b-time').value;
-  state.booking.duration   = document.getElementById('b-duration').value;
-  state.booking.notes      = document.getElementById('b-notes').value.trim();
+  state.booking.provider  = p;
+  state.booking.firstName = document.getElementById('b-first').value.trim();
+  state.booking.lastName  = document.getElementById('b-last').value.trim();
+  state.booking.email     = document.getElementById('b-email').value.trim();
+  state.booking.phone     = document.getElementById('b-phone').value.trim();
+  state.booking.address   = document.getElementById('b-address').value.trim();
+  state.booking.date      = document.getElementById('b-date').value;
+  state.booking.time      = document.getElementById('b-time').value;
+  state.booking.duration  = document.getElementById('b-duration').value;
+  state.booking.notes     = document.getElementById('b-notes').value.trim();
 
   if (!state.booking.date) { showToast('Please select a date'); return; }
   if (!state.booking.time) { showToast('Please select a time slot'); return; }
 
-  // Pre-fill payment name
   document.getElementById('p-name').value =
     `${state.booking.firstName} ${state.booking.lastName}`;
 
-  // Render order summary
-  const fmtDate = new Date(state.booking.date + 'T12:00:00').toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-  const hours   = parseInt(state.booking.duration, 10);
+  const fmtDate = new Date(state.booking.date + 'T12:00:00').toLocaleDateString('en-SG', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  const qty     = parseInt(state.booking.duration, 10);
   const timeStr = formatTime12h(state.booking.time);
+  const amt     = `S$${state.booking.total}`;
 
   document.getElementById('payment-order-summary').innerHTML = `
     <div class="order-summary-row"><span>Provider</span><span>${p.name}</span></div>
     <div class="order-summary-row"><span>Service</span><span>${categoryLabel(p.category)}</span></div>
     <div class="order-summary-row"><span>Date</span><span>${fmtDate}</span></div>
     <div class="order-summary-row"><span>Time</span><span>${timeStr}</span></div>
-    <div class="order-summary-row"><span>Duration</span><span>${hours} hour${hours > 1 ? 's' : ''}</span></div>
+    <div class="order-summary-row"><span>Duration / Units</span><span>${qty}</span></div>
     <div class="order-summary-row total-row">
-      <span><strong>Total</strong></span>
-      <span class="total-price">£${state.booking.total}</span>
+      <span><strong>Total (incl. GST)</strong></span>
+      <span class="total-price">${amt}</span>
     </div>
   `;
 
-  document.getElementById('payment-total-amount').textContent = `£${state.booking.total}`;
+  document.getElementById('payment-total-amount').textContent = amt;
+  document.getElementById('paynow-amount').textContent  = amt;
+  document.getElementById('paynow-amount-2').textContent = amt;
+
+  setPaymentMethod('card');
   showPage('payment');
 }
 
-/* ─── Payment ────────────────────────────────────── */
+/* ─── Payment methods ────────────────────────────── */
+function setPaymentMethod(method) {
+  state.paymentMethod = method;
+  document.getElementById('card-panel').classList.toggle('hidden', method !== 'card');
+  document.getElementById('paynow-panel').classList.toggle('hidden', method !== 'paynow');
+  document.getElementById('pm-tab-card').classList.toggle('active', method === 'card');
+  document.getElementById('pm-tab-paynow').classList.toggle('active', method === 'paynow');
+}
+
 function formatCard(input) {
   let v = input.value.replace(/\D/g, '').substring(0, 16);
   input.value = v.replace(/(.{4})/g, '$1 ').trim();
@@ -638,39 +764,48 @@ function formatExpiry(input) {
 
 function toggleBilling() {
   const same = document.getElementById('billing-same').checked;
-  const fields = document.getElementById('billing-address-fields');
-  fields.classList.toggle('hidden', same);
+  document.getElementById('billing-address-fields').classList.toggle('hidden', same);
 }
 
 function processPayment(e) {
   e.preventDefault();
-
   const card   = document.getElementById('p-card').value.replace(/\s/g, '');
   const expiry = document.getElementById('p-expiry').value;
   const cvv    = document.getElementById('p-cvv').value;
 
-  if (card.length < 16) { showToast('Please enter a valid 16-digit card number'); return; }
+  if (card.length < 16)              { showToast('Please enter a valid 16-digit card number'); return; }
   if (!/^\d{2}\/\d{2}$/.test(expiry)) { showToast('Please enter expiry as MM/YY'); return; }
-  if (cvv.length < 3) { showToast('Please enter a valid CVV'); return; }
+  if (cvv.length < 3)                { showToast('Please enter a valid CVV'); return; }
 
   const btn = document.querySelector('.pay-btn');
   btn.textContent = 'Processing…';
   btn.disabled    = true;
 
-  // Simulate payment processing delay
   setTimeout(() => {
     btn.textContent = 'Pay now';
     btn.disabled    = false;
-    confirmBooking();
+    confirmBooking('card');
   }, 1800);
 }
 
+function processPayNow() {
+  const btn = document.querySelector('#paynow-panel .pay-btn');
+  btn.textContent = 'Verifying payment…';
+  btn.disabled    = true;
+
+  setTimeout(() => {
+    btn.textContent = 'I have paid via PayNow';
+    btn.disabled    = false;
+    confirmBooking('paynow');
+  }, 2000);
+}
+
 /* ─── Confirmation ───────────────────────────────── */
-function confirmBooking() {
+function confirmBooking(method) {
   const b   = state.booking;
   const id  = 'HS-' + Math.random().toString(36).substring(2, 8).toUpperCase();
-  const fmtDate = new Date(b.date + 'T12:00:00').toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-  const hours   = parseInt(b.duration, 10);
+  const fmtDate = new Date(b.date + 'T12:00:00').toLocaleDateString('en-SG', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  const qty     = parseInt(b.duration, 10);
   const timeStr = formatTime12h(b.time);
 
   const record = {
@@ -681,16 +816,17 @@ function confirmBooking() {
     icon:         b.provider.icon,
     date:         b.date,
     time:         b.time,
-    duration:     hours,
+    duration:     qty,
     total:        b.total,
     address:      b.address,
     email:        b.email,
+    paymentMethod: method,
     status:       'confirmed',
     bookedAt:     new Date().toISOString(),
   };
 
   state.bookings.unshift(record);
-  localStorage.setItem('hs_bookings', JSON.stringify(state.bookings));
+  localStorage.setItem('hs_sg_bookings', JSON.stringify(state.bookings));
 
   document.getElementById('confirmation-details').innerHTML = `
     <span class="booking-id">${id}</span>
@@ -698,10 +834,11 @@ function confirmBooking() {
     <div class="confirmation-row"><span>Service</span><span>${categoryLabel(b.provider.category)}</span></div>
     <div class="confirmation-row"><span>Date</span><span>${fmtDate}</span></div>
     <div class="confirmation-row"><span>Time</span><span>${timeStr}</span></div>
-    <div class="confirmation-row"><span>Duration</span><span>${hours} hour${hours > 1 ? 's' : ''}</span></div>
+    <div class="confirmation-row"><span>Duration / Units</span><span>${qty}</span></div>
     <div class="confirmation-row"><span>Address</span><span>${b.address}</span></div>
-    <div class="confirmation-row"><span>Confirmation</span><span>${b.email}</span></div>
-    <div class="confirmation-row"><span>Amount paid</span><span>£${b.total}</span></div>
+    <div class="confirmation-row"><span>Email</span><span>${b.email}</span></div>
+    <div class="confirmation-row"><span>Payment</span><span>${method === 'paynow' ? 'PayNow' : 'Credit Card'}</span></div>
+    <div class="confirmation-row"><span>Amount paid</span><span>S$${b.total}</span></div>
   `;
 
   showPage('confirmation');
@@ -722,18 +859,19 @@ function renderMyBookings() {
   }
 
   list.innerHTML = state.bookings.map(b => {
-    const fmtDate = new Date(b.date + 'T12:00:00').toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+    const fmtDate = new Date(b.date + 'T12:00:00').toLocaleDateString('en-SG', { day:'numeric', month:'short', year:'numeric' });
     const timeStr = formatTime12h(b.time);
+    const pm = b.paymentMethod === 'paynow' ? ' · PayNow' : ' · Card';
     return `
       <div class="booking-item">
         <div class="booking-item-icon" aria-hidden="true">${b.icon}</div>
         <div class="booking-item-info">
           <strong>${b.providerName}</strong>
-          <span>${categoryLabel(b.category)} · ${fmtDate} at ${timeStr} · ${b.duration}hr</span>
-          <span style="display:block;font-size:.78rem;color:#9ca3af;margin-top:.1rem">Booking ref: ${b.id}</span>
+          <span>${categoryLabel(b.category)} · ${fmtDate} at ${timeStr} · ${b.duration} unit(s)${pm}</span>
+          <span style="display:block;font-size:.78rem;color:#9ca3af;margin-top:.1rem">Ref: ${b.id}</span>
         </div>
         <span class="booking-item-status status-${b.status}">${b.status}</span>
-        <div class="booking-item-total">£${b.total}</div>
+        <div class="booking-item-total">S$${b.total}</div>
       </div>`;
   }).join('');
 }
@@ -742,11 +880,11 @@ function renderMyBookings() {
 function categoryLabel(cat) {
   const labels = {
     cleaning:   'Cleaning',
+    aircon:     'Aircon',
     plumbing:   'Plumbing',
     electrical: 'Electrical',
     gardening:  'Gardening',
     painting:   'Painting',
-    hvac:       'HVAC',
     handyman:   'Handyman',
     pest:       'Pest Control',
   };
@@ -758,7 +896,7 @@ function formatTime12h(time) {
   const [h, m] = time.split(':').map(Number);
   const ampm = h >= 12 ? 'PM' : 'AM';
   const hr12  = h % 12 || 12;
-  return `${hr12}:${String(m).padStart(2,'0')} ${ampm}`;
+  return `${hr12}:${String(m).padStart(2, '0')} ${ampm}`;
 }
 
 let toastTimer = null;
@@ -767,12 +905,13 @@ function showToast(msg) {
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
 }
 
 /* ─── Init ───────────────────────────────────────── */
 (function init() {
-  // Show all providers on first load as a showcase
   state.filteredResults = [...PROVIDERS];
   state.sortedResults   = sortProviders([...PROVIDERS], 'rating');
+  // Initialise map on next frame (DOM ready, container has dimensions)
+  requestAnimationFrame(() => requestAnimationFrame(initMap));
 })();
