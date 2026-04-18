@@ -1,59 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dumpling Coin Hunt 🥟</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1f3a5f">
+    <title>SiteWalk &mdash; Defect Reporting</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="game-wrapper">
-    <header>
-      <h1>🥟 Dumpling Coin Hunt</h1>
-      <p class="subtitle">A coin is hiding inside one of the dumplings. Can you find it?</p>
+    <header class="app-header">
+        <h1>SiteWalk</h1>
+        <p class="tagline">On-site defect reporting for architects</p>
     </header>
 
-    <div class="stats-bar">
-      <div class="stat">
-        <span class="stat-label">Score</span>
-        <span class="stat-value" id="score">0</span>
-      </div>
-      <div class="stat">
-        <span class="stat-label">Round</span>
-        <span class="stat-value" id="round">1</span>
-      </div>
-      <div class="stat">
-        <span class="stat-label">Best</span>
-        <span class="stat-value" id="best">0</span>
-      </div>
-      <div class="stat">
-        <span class="stat-label">Tries Left</span>
-        <span class="stat-value" id="tries">3</span>
-      </div>
+    <nav class="tabs">
+        <button class="tab active" data-view="project">Project</button>
+        <button class="tab" data-view="defects">Defects <span id="defect-count" class="badge">0</span></button>
+        <button class="tab" data-view="export">Export</button>
+    </nav>
+
+    <main>
+        <section id="view-project" class="view active">
+            <h2>Project Details</h2>
+            <form id="project-form" class="card">
+                <label>
+                    Project name
+                    <input type="text" id="proj-name" placeholder="e.g. 42 King Street Renovation" required>
+                </label>
+                <label>
+                    Site address
+                    <textarea id="proj-address" rows="2" placeholder="Street, city, postcode"></textarea>
+                </label>
+                <label>
+                    Client
+                    <input type="text" id="proj-client" placeholder="Client name">
+                </label>
+                <label>
+                    Architect / Inspector
+                    <input type="text" id="proj-architect" placeholder="Your name">
+                </label>
+                <label>
+                    Inspection date
+                    <input type="date" id="proj-date">
+                </label>
+                <label>
+                    Report reference
+                    <input type="text" id="proj-ref" placeholder="e.g. SW-2026-001">
+                </label>
+                <button type="submit" class="btn primary">Save project</button>
+                <p id="project-saved" class="muted"></p>
+            </form>
+
+            <div class="card data-actions">
+                <h3>Data</h3>
+                <p class="muted">All data is stored locally on this device and works offline.</p>
+                <button id="btn-backup" class="btn" type="button">Export backup (JSON)</button>
+                <label class="btn file-btn">
+                    Import backup
+                    <input type="file" id="import-file" accept="application/json" hidden>
+                </label>
+                <button id="btn-clear" class="btn danger" type="button">Clear all data</button>
+            </div>
+        </section>
+
+        <section id="view-defects" class="view">
+            <div class="toolbar">
+                <h2>Defects</h2>
+                <button id="btn-add-defect" class="btn primary" type="button">+ New defect</button>
+            </div>
+            <div id="defect-list" class="defect-list">
+                <p class="empty-state">No defects recorded yet. Tap <strong>+ New defect</strong> to add one.</p>
+            </div>
+        </section>
+
+        <section id="view-export" class="view">
+            <h2>Export report</h2>
+            <div class="card">
+                <p>Generate a PDF report with the project details, a defect summary and each defect with its photos and comments.</p>
+                <label class="checkbox"><input type="checkbox" id="opt-cover" checked> Include cover page</label>
+                <label class="checkbox"><input type="checkbox" id="opt-summary" checked> Include summary table</label>
+                <label class="checkbox"><input type="checkbox" id="opt-photos" checked> Include photos</label>
+                <button id="btn-export-pdf" class="btn primary large" type="button">Generate PDF</button>
+                <p id="export-status" class="muted"></p>
+            </div>
+        </section>
+    </main>
+
+    <div id="defect-modal" class="modal hidden">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h2 id="defect-modal-title">New defect</h2>
+                <button id="btn-close-modal" class="btn icon" type="button" aria-label="Close">&times;</button>
+            </header>
+            <form id="defect-form" class="modal-body">
+                <label>
+                    Title
+                    <input type="text" id="d-title" required placeholder="e.g. Cracked tile at entrance">
+                </label>
+                <div class="row">
+                    <label>
+                        Location / room
+                        <input type="text" id="d-location" placeholder="e.g. Kitchen, Level 2">
+                    </label>
+                    <label>
+                        Severity
+                        <select id="d-severity">
+                            <option value="Low">Low</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="High">High</option>
+                            <option value="Critical">Critical</option>
+                        </select>
+                    </label>
+                </div>
+                <label>
+                    Trade / discipline
+                    <input type="text" id="d-trade" placeholder="e.g. Tiling, Plumbing, Electrical">
+                </label>
+                <label>
+                    Description
+                    <textarea id="d-description" rows="3" placeholder="Describe the defect"></textarea>
+                </label>
+                <label>
+                    Comments / recommended action
+                    <textarea id="d-comments" rows="3" placeholder="Remedial action, responsible party, deadline..."></textarea>
+                </label>
+
+                <div class="photos-section">
+                    <div class="photos-header">
+                        <span>Photos (<span id="photo-count">0</span>)</span>
+                        <label class="btn small file-btn">
+                            + Add photo
+                            <input type="file" id="photo-input" accept="image/*" capture="environment" multiple hidden>
+                        </label>
+                    </div>
+                    <div id="photo-thumbs" class="photo-thumbs"></div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" id="btn-delete-defect" class="btn danger hidden">Delete</button>
+                    <button type="button" id="btn-cancel-defect" class="btn">Cancel</button>
+                    <button type="submit" class="btn primary">Save defect</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <div class="bowl-container" id="bowl-container" aria-label="Bowl of dumplings"></div>
-
-    <div class="message-box" id="message-box">
-      <span id="message-text">Pick a dumpling to find the coin!</span>
-    </div>
-
-    <div class="controls">
-      <button class="btn btn-primary" id="new-game-btn">New Game</button>
-    </div>
-
-    <div class="hint-bar" id="hint-bar"></div>
-  </div>
-
-  <div class="overlay hidden" id="overlay">
-    <div class="overlay-card">
-      <div class="overlay-icon" id="overlay-icon"></div>
-      <h2 id="overlay-title"></h2>
-      <p id="overlay-msg"></p>
-      <button class="btn btn-primary" id="overlay-btn">Play Again</button>
-    </div>
-  </div>
-
-  <script src="game.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
